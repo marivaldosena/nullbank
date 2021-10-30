@@ -1,19 +1,15 @@
 package ibm.blueacademy.nullbank.services;
 
-import ibm.blueacademy.nullbank.models.Account;
+import ibm.blueacademy.nullbank.helpers.TestsHelper;
 import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.repositories.ClientRepository;
+import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.persistence.GeneratedValue;
-
-import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,21 +30,12 @@ public class ClientServiceTests {
     @Test
     void shouldRegisterNewClientGivenANonAccountHolder() {
         // Arrange
-        Client expectedClient = new Client(
-            "Nome do cliente",
-            "123.456.789-00",
-            "Endereço ",
-            new BigDecimal("5000.00")
-        );
+        Client expectedClient = TestsHelper.mockClient();
+        NewClientRequest request = TestsHelper.mockNewClientRequest();
         Mockito.when(clientRepository.save(any())).thenReturn(expectedClient);
 
         // Act
-        Client newClient = clientService.registerNewClient(
-            "Nome do cliente",
-            "123.456.789-00",
-            "Endereço ",
-            "5000.00"
-        );
+        Client newClient = clientService.registerNewClient(request);
 
         // Assert
         assertEquals(expectedClient.getName(), newClient.getName());

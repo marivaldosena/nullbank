@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -45,5 +47,24 @@ public class ClientServiceTests {
 
         // Verify
         Mockito.verify(clientRepository).save(any());
+    }
+
+    @Test
+    void shouldListAllClientWhenSolicited() {
+        // Arrange
+        List<Client> expectedListOfClients = List.of(TestsHelper.mockClient());
+        Mockito.when(clientRepository.findAll()).thenReturn(expectedListOfClients);
+
+        // Act
+        List<Client> returnedClients = clientService.listAllClients();
+
+        // Assert
+        assertEquals(expectedListOfClients.get(0).getCpf(), returnedClients.get(0).getCpf());
+        assertEquals(expectedListOfClients.get(0).getName(), returnedClients.get(0).getName());
+        assertEquals(expectedListOfClients.get(0).getAddress(), returnedClients.get(0).getAddress());
+        assertEquals(expectedListOfClients.get(0).getSalary(), returnedClients.get(0).getSalary());
+
+        // Verify
+        Mockito.verify(clientRepository).findAll();
     }
 }

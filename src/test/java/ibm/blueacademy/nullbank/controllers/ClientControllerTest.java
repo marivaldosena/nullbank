@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,10 +28,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableAutoConfiguration
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ClientControllerTest {
-    @Autowired
-    private WebApplicationContext wac;
 
     private MockMvc mockMvc;
+
+    @Autowired
+    private WebApplicationContext wac;
 
     @Autowired
     private ObjectMapper mapper;
@@ -56,12 +58,15 @@ class ClientControllerTest {
         mockMvc.perform(
             MockMvcRequestBuilders
                 .post("/api/v1/clients")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding(StandardCharsets.UTF_8)
                 .content(mapper.writeValueAsString(request))
             ).andDo(print())
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", Matchers.containsString("/api/v1/clients/1")))
-            .andExpect(jsonPath("$.name", Matchers.is("Nome do cliente")));
+            .andExpect(jsonPath("$.name", Matchers.is("Nome do cliente")))
+            .andExpect(jsonPath("$.id").isNotEmpty());
 
         // Verify
         Mockito.verify(clientService).registerNewClient(any());

@@ -5,6 +5,7 @@ import ibm.blueacademy.nullbank.repositories.ClientRepository;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Primary
 @Service
@@ -26,5 +27,10 @@ public class DefaultClientService implements ClientService {
         clientRepository.save(newClient);
 
         return newClient;
+    }
+
+    @Override
+    public List<Client> listAllClients() {
+        return clientRepository.findAll();
     }
 }

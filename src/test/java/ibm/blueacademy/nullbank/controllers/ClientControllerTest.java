@@ -7,6 +7,7 @@ import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import ibm.blueacademy.nullbank.services.ClientService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,10 @@ class ClientControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
+
+    @DisplayName("should register new client given a valid request")
     @Test
-    void shouldRegisterNewClientGivenAValidRequest() throws Exception {
+    void registerClientRequest() throws Exception {
         // Arrange
         NewClientRequest request = TestsHelper.mockNewClientRequest();
         Client expectedClient = TestsHelper.mockClient();

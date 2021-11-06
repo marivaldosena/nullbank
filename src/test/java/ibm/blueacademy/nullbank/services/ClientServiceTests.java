@@ -5,6 +5,7 @@ import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.repositories.ClientRepository;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -27,8 +28,9 @@ public class ClientServiceTests {
         clientService = new DefaultClientService(clientRepository);
     }
 
+    @DisplayName("should register new client given a non-account holder")
     @Test
-    void shouldRegisterNewClientGivenANonAccountHolder() {
+    void registerClient() {
         // Arrange
         Client expectedClient = TestsHelper.mockClient();
         NewClientRequest request = TestsHelper.mockNewClientRequest();

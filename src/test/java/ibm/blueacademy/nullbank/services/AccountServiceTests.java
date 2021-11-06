@@ -6,6 +6,9 @@ import ibm.blueacademy.nullbank.models.AccountType;
 import ibm.blueacademy.nullbank.models.Agency;
 import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.repositories.AccountRepository;
+import ibm.blueacademy.nullbank.repositories.AgencyRepository;
+import ibm.blueacademy.nullbank.repositories.ClientRepository;
+import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,18 +29,24 @@ public class AccountServiceTests {
     private AccountRepository accountRepository;
 
     @MockBean
+    private ClientRepository clientRepository;
+
+    @MockBean
+    private AgencyRepository agencyRepository;
+
+    @MockBean
     private ClientService clientService;
 
     @BeforeEach
     void setUp() {
-        accountService = new DefaultAccountService(accountRepository);
+        accountService = new DefaultAccountService(accountRepository, clientRepository, agencyRepository);
     }
 
     @DisplayName("should open a client account given a valid request")
     @Test
     void openAccount() {
         // Arrange
-        NewClientRequest request = TestsHelper.mockNewClientRequest();
+        NewAccountRequest
         Client expectedClient = TestsHelper.mockClient();
         Account expectedAccount = TestsHelper.mockAccount();
         Mockito.when(clientService.registerNewClient(any())).thenReturn(expectedClient);

@@ -26,6 +26,10 @@ public class Account {
         this.agency = agency;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Client getAccountHolder() {
         return accountHolder;
     }

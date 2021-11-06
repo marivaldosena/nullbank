@@ -1,0 +1,27 @@
+package ibm.blueacademy.nullbank.requests;
+
+import ibm.blueacademy.nullbank.models.AccountType;
+
+public class NewAccountRequest {
+    private String cpf;
+    private String agencyNumber;
+    private AccountType accountType;
+
+    public NewAccountRequest(String cpf, String agencyNumber, AccountType accountType) {
+        this.cpf = cpf;
+        this.agencyNumber = agencyNumber;
+        this.accountType = accountType;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public String getAgencyNumber() {
+        return agencyNumber;
+    }
+
+    public AccountType getAccountType() {
+        return accountType;
+    }
+}

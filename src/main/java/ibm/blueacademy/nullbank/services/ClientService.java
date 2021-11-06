@@ -11,4 +11,6 @@ public interface ClientService {
 
     List<Client> listAllClients();
 
+    Client findClientByCpf(String cpf);
+
 }

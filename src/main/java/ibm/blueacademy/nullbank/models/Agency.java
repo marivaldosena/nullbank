@@ -10,7 +10,9 @@ public class Agency {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String agencyName;
+
     private String agencyNumber;
 
     /**

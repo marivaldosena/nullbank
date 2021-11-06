@@ -30,6 +30,7 @@ public class ClientController {
     ) {
         Client newClient = clientService.registerNewClient(request);
         ClientResponse response = new ClientResponse(newClient);
+
         URI uri = builder.path("/api/v1/clients/{id}").buildAndExpand(response.getId()).toUri();
 
         return ResponseEntity.created(uri).body(response);

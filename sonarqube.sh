@@ -1,0 +1,1 @@
+mvn clean install sonar:sonar -Dsonar.projectKey=nullbank  -Dsonar.host.url=http://localhost:9000 -Dsonar.login=<your token>

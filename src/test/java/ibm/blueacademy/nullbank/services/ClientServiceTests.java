@@ -4,6 +4,7 @@ import ibm.blueacademy.nullbank.helpers.TestsHelper;
 import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.repositories.ClientRepository;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
+import ibm.blueacademy.nullbank.services.impl.DefaultClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

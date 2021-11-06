@@ -1,6 +1,5 @@
 package ibm.blueacademy.nullbank.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ibm.blueacademy.nullbank.helpers.TestsHelper;
 import ibm.blueacademy.nullbank.models.Account;
@@ -17,6 +16,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -51,7 +51,9 @@ public class AccountControllerTests {
         // Arrange
         NewAccountRequest request = new NewAccountRequest("606.344.610-95", "0001", AccountType.CURRENT_ACCOUNT);
         Account expectedAccount = TestsHelper.mockAccount();
-        Mockito.when(accountService.openAccount(any(), any(), any())).thenReturn(expectedAccount);
+        Mockito.when(accountService.openAccount(any())).thenReturn(expectedAccount);
+
+        ReflectionTestUtils.setField(expectedAccount, "id", 1L);
 
         // Act
         mockMvc.perform(
@@ -63,19 +65,14 @@ public class AccountControllerTests {
                 .content(mapper.writeValueAsString(request))
             ).andDo(print())
             .andExpect(status().isCreated())
-            .andExpect(header().string("Location",
-                Matchers.containsString("/api/v1/accounts/1")))
+            .andExpect(header().string("Location", Matchers.containsString("/api/v1/accounts/1")))
             .andExpect(jsonPath("$.accountNumber").exists())
-            .andExpect(jsonPath("$.agencyNumber",
-                Matchers.is(expectedAccount.getAgency().getAgencyNumber())))
-            .andExpect(jsonPath("$.agencyName",
-                Matchers.is(expectedAccount.getAgency().getAgencyName())))
-            .andExpect(jsonPath("$.accountHolderName",
-                Matchers.is(expectedAccount.getAccountHolder().getName())))
-            .andExpect(jsonPath("$.accountHolderId",
-                Matchers.is(expectedAccount.getAccountHolder().getId())));
+            .andExpect(jsonPath("$.agencyNumber", Matchers.is(expectedAccount.getAgency().getAgencyNumber())))
+            .andExpect(jsonPath("$.agencyName", Matchers.is(expectedAccount.getAgency().getAgencyName())))
+            .andExpect(jsonPath("$.accountHolderName", Matchers.is(expectedAccount.getAccountHolder().getName())))
+            .andExpect(jsonPath("$.accountHolderId", Matchers.is(expectedAccount.getAccountHolder().getId())));
 
         // Verify
-        Mockito.verify(accountService).openAccount(any(), any(), any());
+        Mockito.verify(accountService).openAccount(any());
     }
 }

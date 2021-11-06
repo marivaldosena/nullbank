@@ -6,13 +6,15 @@ public class AccountResponse {
     private String agencyNumber;
     private String agencyName;
     private String accountHolderName;
-    private String accountHolderId;
+    private Long accountHolderId;
+    private String accountNumber;
 
     public AccountResponse(Account account) {
         this.agencyNumber = account.getAgency().getAgencyNumber();
         this.agencyName = account.getAgency().getAgencyName();
         this.accountHolderName = account.getAccountHolder().getName();
-        this.accountHolderId = account.getAccountHolder().getId().toString();
+        this.accountHolderId = account.getAccountHolder().getId();
+        this.accountNumber = account.getAccountNumber();
     }
 
     public String getAgencyNumber() {
@@ -27,7 +29,11 @@ public class AccountResponse {
         return accountHolderName;
     }
 
-    public String getAccountHolderId() {
+    public Long getAccountHolderId() {
         return accountHolderId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
     }
 }

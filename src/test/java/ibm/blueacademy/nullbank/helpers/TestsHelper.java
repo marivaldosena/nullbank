@@ -4,6 +4,7 @@ import ibm.blueacademy.nullbank.models.Account;
 import ibm.blueacademy.nullbank.models.AccountType;
 import ibm.blueacademy.nullbank.models.Agency;
 import ibm.blueacademy.nullbank.models.Client;
+import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 
 import java.math.BigDecimal;
@@ -39,6 +40,14 @@ public class TestsHelper {
             mockClient(),
             AccountType.CURRENT_ACCOUNT,
             mockAgency()
+        );
+    }
+
+    public static NewAccountRequest mockNewAccountRequest() {
+        return new NewAccountRequest(
+            "606.344.610-95",
+            "0001",
+            AccountType.CURRENT_ACCOUNT
         );
     }
 }

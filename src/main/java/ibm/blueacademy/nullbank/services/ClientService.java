@@ -7,4 +7,6 @@ public interface ClientService {
 
     Client registerNewClient(NewClientRequest request);
 
+    Client findClientByCpf(String cpf);
+
 }

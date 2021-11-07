@@ -11,4 +11,8 @@ public interface AccountService {
 
     List<Account> listAccounts();
 
+    Account getAccountById(Long id);
+
+    Account getAccountByNumber(String accountNumber);
+
 }

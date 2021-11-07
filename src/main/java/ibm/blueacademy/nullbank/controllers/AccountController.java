@@ -1,10 +1,12 @@
 package ibm.blueacademy.nullbank.controllers;
 
 import ibm.blueacademy.nullbank.models.Account;
+import ibm.blueacademy.nullbank.requests.AmountRequest;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.responses.AccountListResponse;
 import ibm.blueacademy.nullbank.responses.AccountResponse;
 import ibm.blueacademy.nullbank.services.AccountService;
+import ibm.blueacademy.nullbank.services.CashService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,9 +19,11 @@ import java.util.List;
 @RequestMapping("/api/v1/accounts")
 public class AccountController {
     private AccountService accountService;
+    private CashService cashService;
 
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, CashService cashService) {
         this.accountService = accountService;
+        this.cashService = cashService;
     }
 
     @PostMapping
@@ -39,6 +43,29 @@ public class AccountController {
     public ResponseEntity<AccountListResponse> listAccounts() {
         List<Account> listOfAccounts = accountService.listAccounts();
         AccountListResponse response = new AccountListResponse(listOfAccounts);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<AccountResponse> findAccount(
+        @PathVariable String accountNumber
+    ) {
+        Account account = accountService.getAccountByNumber(accountNumber);
+        AccountResponse response = new AccountResponse(account);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{accountNumber}/deposit")
+    public ResponseEntity<AccountResponse> deposit(
+        @PathVariable String accountNumber,
+        @Valid @RequestBody AmountRequest request
+    ) {
+        Account account = accountService.getAccountByNumber(accountNumber);
+        cashService.deposit(account, request.getAmount());
+
+        AccountResponse response = new AccountResponse(account);
 
         return ResponseEntity.ok(response);
     }

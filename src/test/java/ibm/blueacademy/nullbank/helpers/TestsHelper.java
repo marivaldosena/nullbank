@@ -1,9 +1,9 @@
 package ibm.blueacademy.nullbank.helpers;
 
 import ibm.blueacademy.nullbank.models.Account;
-import ibm.blueacademy.nullbank.models.AccountType;
 import ibm.blueacademy.nullbank.models.Agency;
 import ibm.blueacademy.nullbank.models.Client;
+import ibm.blueacademy.nullbank.models.enums.AccountType;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 

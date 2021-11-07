@@ -1,6 +1,6 @@
 package ibm.blueacademy.nullbank.requests;
 
-import ibm.blueacademy.nullbank.models.AccountType;
+import ibm.blueacademy.nullbank.models.enums.AccountType;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.NotBlank;

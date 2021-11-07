@@ -5,6 +5,7 @@ import ibm.blueacademy.nullbank.requests.AmountRequest;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.responses.AccountListResponse;
 import ibm.blueacademy.nullbank.responses.AccountResponse;
+import ibm.blueacademy.nullbank.responses.TransferResponse;
 import ibm.blueacademy.nullbank.services.AccountService;
 import ibm.blueacademy.nullbank.services.CashService;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +80,21 @@ public class AccountController {
         cashService.withdraw(account, request.getAmount());
 
         AccountResponse response = new AccountResponse(account);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{originAccountNumber}/transfer-to/{destinationAccountNumber}")
+    public ResponseEntity<TransferResponse> transferTo(
+        @PathVariable String originAccountNumber,
+        @PathVariable String destinationAccountNumber,
+        @Valid @RequestBody AmountRequest request
+    ) {
+        Account origin = accountService.getAccountByNumber(originAccountNumber);
+        Account destination = accountService.getAccountByNumber(destinationAccountNumber);
+        cashService.transferCash(origin, destination, request.getAmount());
+
+        TransferResponse response = new TransferResponse(origin, destination, request.getAmount());
 
         return ResponseEntity.ok(response);
     }

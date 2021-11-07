@@ -7,27 +7,35 @@ import ibm.blueacademy.nullbank.helpers.providers.WithdrawalArgumentsProvider;
 import ibm.blueacademy.nullbank.models.Account;
 import ibm.blueacademy.nullbank.models.enums.AccountType;
 import ibm.blueacademy.nullbank.services.impl.CashManagementService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
 public class CashManagementServiceTests {
 
     private CashManagementService cashManagementService;
 
+    @MockBean
+    private TransactionService transactionService;
+
     private Account account;
 
     @BeforeEach
     void setUp() {
-        cashManagementService = new CashManagementService();
+        cashManagementService = new CashManagementService(transactionService);
         account = TestsHelper.mockAccount();
     }
 
@@ -38,6 +46,8 @@ public class CashManagementServiceTests {
         // Arrange
         BigDecimal initialBalance = account.getCurrentBalance();
 
+        Mockito.doNothing().when(transactionService).register(any());
+
         // Act
         for (var amountToDeposit : deposits) {
             cashManagementService.deposit(account, BigDecimal.valueOf(amountToDeposit));
@@ -47,6 +57,9 @@ public class CashManagementServiceTests {
         // Assert
         assertEquals(BigDecimal.ZERO, initialBalance);
         assertEquals(BigDecimal.valueOf(expectedValue), balanceAfterDeposits);
+
+        // Verify
+        Mockito.verify(transactionService, times(deposits.length)).register(any());
     }
 
     @DisplayName("should withdraw given a valid cash amount")
@@ -55,6 +68,8 @@ public class CashManagementServiceTests {
     void withdraw(double initialBalance, double expectedBalance, double... withdrawals) {
         // Arrange
         cashManagementService.deposit(account, BigDecimal.valueOf(initialBalance));
+
+        Mockito.doNothing().when(transactionService).register(any());
 
         // Act
         for (var amountToWithdraw : withdrawals) {
@@ -65,6 +80,9 @@ public class CashManagementServiceTests {
 
         // Assert
         assertEquals(BigDecimal.valueOf(expectedBalance), balanceAfterWithdrawals);
+
+        // Verify
+        Mockito.verify(transactionService, times(withdrawals.length + 1)).register(any());
     }
 
     @DisplayName("should transfer from an account to another given a valid cash amount")
@@ -78,6 +96,8 @@ public class CashManagementServiceTests {
     ) {
         // Arrange
         cashManagementService.deposit(account, BigDecimal.valueOf(originInitialBalance));
+
+        Mockito.doNothing().when(transactionService).register(any());
 
         Account destination = new Account(TestsHelper.mockClient(), AccountType.SAVINGS_ACCOUNT, TestsHelper.mockAgency());
         BigDecimal destinationInitialBalance = destination.getCurrentBalance();
@@ -93,5 +113,8 @@ public class CashManagementServiceTests {
         assertEquals(BigDecimal.ZERO, destinationInitialBalance);
         assertEquals(BigDecimal.valueOf(destinationExpectedBalance), destinationBalanceAfterTransfers);
         assertEquals(BigDecimal.valueOf(originExpectedBalance), originBalanceAfterTransfers);
+
+        // Verify
+        Mockito.verify(transactionService, times(transfers.length + 1)).register(any());
     }
 }

@@ -1,15 +1,14 @@
 package ibm.blueacademy.nullbank.services;
 
-import ibm.blueacademy.nullbank.helpers.providers.DepositArgumentsProvider;
 import ibm.blueacademy.nullbank.helpers.TestsHelper;
+import ibm.blueacademy.nullbank.helpers.providers.DepositArgumentsProvider;
 import ibm.blueacademy.nullbank.helpers.providers.TransferArgumentsProvider;
 import ibm.blueacademy.nullbank.helpers.providers.WithdrawalArgumentsProvider;
 import ibm.blueacademy.nullbank.models.Account;
-import ibm.blueacademy.nullbank.models.AccountType;
+import ibm.blueacademy.nullbank.models.enums.AccountType;
 import ibm.blueacademy.nullbank.services.impl.CashManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;

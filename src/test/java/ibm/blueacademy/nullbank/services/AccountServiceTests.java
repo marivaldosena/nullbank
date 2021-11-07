@@ -16,6 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -32,24 +34,29 @@ public class AccountServiceTests {
     @MockBean
     private ClientService clientService;
 
+    NewAccountRequest newAccount;
+    Client expectedClient;
+    Account expectedAccount;
+    Agency expectedAgency;
+
     @BeforeEach
     void setUp() {
         accountService = new DefaultAccountService(accountRepository, clientService, agencyService);
+
+        newAccount = TestsHelper.mockNewAccountRequest();
+        expectedClient = TestsHelper.mockClient();
+        expectedAccount = TestsHelper.mockAccount();
+        expectedAgency = TestsHelper.mockAgency();
+
+        ReflectionTestUtils.setField(expectedClient, "id", 1L);
+        ReflectionTestUtils.setField(expectedAccount, "id", 1L);
+        ReflectionTestUtils.setField(expectedAgency, "id", 1L);
     }
 
     @DisplayName("should open a client account given a valid request")
     @Test
     void openAccount() {
         // Arrange
-        NewAccountRequest newAccount = TestsHelper.mockNewAccountRequest();
-        Client expectedClient = TestsHelper.mockClient();
-        Account expectedAccount = TestsHelper.mockAccount();
-        Agency expectedAgency = TestsHelper.mockAgency();
-
-        ReflectionTestUtils.setField(expectedClient, "id", 1L);
-        ReflectionTestUtils.setField(expectedAccount, "id", 1L);
-        ReflectionTestUtils.setField(expectedAgency, "id", 1L);
-
         Mockito.when(clientService.registerNewClient(any())).thenReturn(expectedClient);
         Mockito.when(agencyService.findAgencyByNumber(any())).thenReturn(expectedAgency);
         Mockito.when(accountRepository.save(any())).thenReturn(expectedAccount);
@@ -69,5 +76,22 @@ public class AccountServiceTests {
 
         // Verify
         Mockito.verify(accountRepository).save(any());
+    }
+
+    @DisplayName("should get an account given a valid id")
+    @Test
+    void getAccount() {
+        // Arrange
+        Mockito.when(accountRepository.findById(any())).thenReturn(Optional.ofNullable(expectedAccount));
+
+        // Act
+        Account account = accountService.getAccountById(1L);
+
+        // Assert
+        assertEquals(expectedAccount.getAccountType(), account.getAccountType());
+        assertEquals(expectedAccount.getAccountNumber(), account.getAccountNumber());
+
+        // Verify
+        Mockito.verify(accountRepository).findById(any());
     }
 }

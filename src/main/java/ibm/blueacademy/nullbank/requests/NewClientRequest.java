@@ -11,6 +11,7 @@ public class NewClientRequest {
     @NotBlank
     private String name;
 
+    @NotBlank
     @CPF
     private String cpf;
 

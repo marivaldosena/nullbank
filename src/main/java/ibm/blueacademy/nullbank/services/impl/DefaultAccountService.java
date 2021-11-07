@@ -10,8 +10,8 @@ import ibm.blueacademy.nullbank.services.AgencyService;
 import ibm.blueacademy.nullbank.services.ClientService;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DefaultAccountService implements AccountService {
@@ -43,5 +43,27 @@ public class DefaultAccountService implements AccountService {
     @Override
     public List<Account> listAccounts() {
         return accountRepository.findAll();
+    }
+
+    @Override
+    public Account getAccountById(Long id) {
+        Optional<Account> account = accountRepository.findById(id);
+
+        if (!account.isPresent()) {
+            throw new RuntimeException("Account not found");
+        }
+
+        return account.get();
+    }
+
+    @Override
+    public Account getAccountByNumber(String accountNumber) {
+        Optional<Account> account = accountRepository.findByAccountNumber(accountNumber);
+
+        if (!account.isPresent()) {
+            throw new RuntimeException("Account not found");
+        }
+
+        return account.get();
     }
 }

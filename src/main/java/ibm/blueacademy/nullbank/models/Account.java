@@ -1,5 +1,7 @@
 package ibm.blueacademy.nullbank.models;
 
+import ibm.blueacademy.nullbank.models.enums.AccountType;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Random;

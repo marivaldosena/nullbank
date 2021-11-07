@@ -3,7 +3,6 @@ package ibm.blueacademy.nullbank.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ibm.blueacademy.nullbank.helpers.TestsHelper;
 import ibm.blueacademy.nullbank.models.Account;
-import ibm.blueacademy.nullbank.models.AccountType;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.services.AccountService;
 import org.hamcrest.Matchers;
@@ -22,6 +21,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,10 +51,10 @@ public class AccountControllerTests {
     @Test
     void openAccount() throws Exception {
         // Arrange
-        NewAccountRequest request = new NewAccountRequest("606.344.610-95", "0001", AccountType.CURRENT_ACCOUNT);
+        NewAccountRequest request = TestsHelper.mockNewAccountRequest();
         Account expectedAccount = TestsHelper.mockAccount();
-        Mockito.when(accountService.openAccount(any())).thenReturn(expectedAccount);
 
+        Mockito.when(accountService.openAccount(any())).thenReturn(expectedAccount);
         ReflectionTestUtils.setField(expectedAccount, "id", 1L);
 
         // Act
@@ -74,5 +76,34 @@ public class AccountControllerTests {
 
         // Verify
         Mockito.verify(accountService).openAccount(any());
+    }
+
+    @DisplayName("should list all accounts given a valid request")
+    @Test
+    void listAccounts() throws Exception {
+        // Arrange
+        NewAccountRequest request = TestsHelper.mockNewAccountRequest();
+        Account expectedAccount = TestsHelper.mockAccount();
+
+        Mockito.when(accountService.listAccounts()).thenReturn(List.of(expectedAccount));
+        ReflectionTestUtils.setField(expectedAccount, "id", 1L);
+
+        // Act
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/api/v1/accounts")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+            ).andDo(print())
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.data.*.accountNumber").exists())
+            .andExpect(jsonPath("$.data.*.agencyNumber", hasItems(expectedAccount.getAgency().getAgencyNumber())))
+            .andExpect(jsonPath("$.data.*.agencyName", hasItems(expectedAccount.getAgency().getAgencyName())))
+            .andExpect(jsonPath("$.data.*.accountHolderName", hasItems(expectedAccount.getAccountHolder().getName())))
+            .andExpect(jsonPath("$.data.*.accountHolderId", hasItems(expectedAccount.getAccountHolder().getId())));
+
+        // Verify
+        Mockito.verify(accountService).listAccounts();
     }
 }

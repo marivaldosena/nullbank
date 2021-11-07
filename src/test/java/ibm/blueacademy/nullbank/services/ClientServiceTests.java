@@ -53,8 +53,9 @@ public class ClientServiceTests {
         Mockito.verify(clientRepository).save(any());
     }
 
+    @DisplayName("should list all client when solicited")
     @Test
-    void shouldListAllClientWhenSolicited() {
+    void listAllClients() {
         // Arrange
         List<Client> expectedListOfClients = List.of(TestsHelper.mockClient());
         Mockito.when(clientRepository.findAll()).thenReturn(expectedListOfClients);
@@ -72,8 +73,9 @@ public class ClientServiceTests {
         Mockito.verify(clientRepository).findAll();
     }
 
+    @DisplayName("should return an empty list when there is no client")
     @Test
-    void shouldReturnAnEmptyListWhenThereIsNoClient() {
+    void emptyList() {
         // Arrange
         List<Client> expectedListOfCustomers = Collections.emptyList();
         Mockito.when(clientRepository.findAll()).thenReturn(expectedListOfCustomers);

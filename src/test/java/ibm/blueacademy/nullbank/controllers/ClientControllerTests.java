@@ -6,6 +6,8 @@ import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import ibm.blueacademy.nullbank.services.ClientService;
 import org.hamcrest.Matchers;
+import org.jeasy.random.EasyRandom;
+import org.jeasy.random.EasyRandomParameters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,7 +50,6 @@ class ClientControllerTests {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
 
-
     @DisplayName("should register new client given a valid request")
     @Test
     void registerClientRequest() throws Exception {
@@ -66,9 +71,35 @@ class ClientControllerTests {
             ).andDo(print())
             .andExpect(status().isCreated())
             .andExpect(header().string("Location", Matchers.containsString("/api/v1/clients/1")))
-            .andExpect(jsonPath("$.name", Matchers.is("Nome do cliente")));
+            .andExpect(jsonPath("$.name", Matchers.is("Nome do cliente")))
+            .andExpect(jsonPath("$.id").isNotEmpty());
 
         // Verify
         Mockito.verify(clientService).registerNewClient(any());
+    }
+
+    @DisplayName("should list all client given a valid request")
+    @Test
+    void listClients() throws Exception {
+        // Arrange
+        List<Client> listOfClients = List.of(TestsHelper.mockClient());
+        ReflectionTestUtils.setField(listOfClients.get(0), "id", 1L);
+
+        Mockito.when(clientService.listAllClients()).thenReturn(listOfClients);
+
+        // Act
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/api/v1/clients")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+            ).andDo(print())
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.data.*.id", hasItems(1)))
+            .andExpect(jsonPath("$.data.*.name", hasItems("Nome do cliente")));
+
+        // Verify
+        Mockito.verify(clientService).listAllClients();
     }
 }

@@ -15,9 +15,19 @@ public class Agency {
 
     private String agencyNumber;
 
+    /**
+     * @deprecated Hibernate only.
+     */
+    public Agency() {
+    }
+
     public Agency(String agencyName, String agencyNumber) {
         this.agencyName = agencyName;
         this.agencyNumber = agencyNumber;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getAgencyName() {

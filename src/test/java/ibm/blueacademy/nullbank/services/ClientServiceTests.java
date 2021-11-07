@@ -13,6 +13,9 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -48,5 +51,42 @@ public class ClientServiceTests {
 
         // Verify
         Mockito.verify(clientRepository).save(any());
+    }
+
+    @DisplayName("should list all client when solicited")
+    @Test
+    void listAllClients() {
+        // Arrange
+        List<Client> expectedListOfClients = List.of(TestsHelper.mockClient());
+        Mockito.when(clientRepository.findAll()).thenReturn(expectedListOfClients);
+
+        // Act
+        List<Client> allClients = clientService.listAllClients();
+
+        // Assert
+        assertEquals(expectedListOfClients.get(0).getCpf(), allClients.get(0).getCpf());
+        assertEquals(expectedListOfClients.get(0).getName(), allClients.get(0).getName());
+        assertEquals(expectedListOfClients.get(0).getAddress(), allClients.get(0).getAddress());
+        assertEquals(expectedListOfClients.get(0).getSalary(), allClients.get(0).getSalary());
+
+        // Verify
+        Mockito.verify(clientRepository).findAll();
+    }
+
+    @DisplayName("should return an empty list when there is no client")
+    @Test
+    void emptyList() {
+        // Arrange
+        List<Client> expectedListOfCustomers = Collections.emptyList();
+        Mockito.when(clientRepository.findAll()).thenReturn(expectedListOfCustomers);
+
+        // Act
+        List<Client> allClients = clientService.listAllClients();
+
+        // Assert
+        assertEquals(expectedListOfCustomers.size(), allClients.size());
+
+        // Verify
+        Mockito.verify(clientRepository).findAll();
     }
 }

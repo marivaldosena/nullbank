@@ -10,12 +10,13 @@ import ibm.blueacademy.nullbank.services.AgencyService;
 import ibm.blueacademy.nullbank.services.ClientService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DefaultAccountService implements AccountService {
     private AccountRepository accountRepository;
     private ClientService clientService;
     private AgencyService agencyService;
-
 
     public DefaultAccountService(
         AccountRepository accountRepository,
@@ -36,5 +37,10 @@ public class DefaultAccountService implements AccountService {
         newAccount = accountRepository.save(newAccount);
 
         return newAccount;
+    }
+
+    @Override
+    public List<Account> listAccounts() {
+        return accountRepository.findAll();
     }
 }

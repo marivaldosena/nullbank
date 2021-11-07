@@ -11,13 +11,18 @@ public class Account {
 
     @ManyToOne
     private Client accountHolder;
-
-    private AccountType accountType;
-
     private String accountNumber;
+    private AccountType accountType;
 
     @ManyToOne
     private Agency agency;
+
+    /**
+     * @deprecated Hibernate only.
+     */
+    public Account() {
+    }
+
 
     public Account(Client accountHolder, AccountType accountType, Agency agency) {
         this.accountHolder = accountHolder;
@@ -33,6 +38,7 @@ public class Account {
     public Client getAccountHolder() {
         return accountHolder;
     }
+
 
     public AccountType getAccountType() {
         return accountType;
@@ -50,8 +56,9 @@ public class Account {
         return String.format("%1$" + length + "s", inputString).replace(' ', '0');
     }
 
-    /* If this logic is used for many classes and we might change the maximum number,
-        it's interesting to extract this piece of code to another class.
+    /**
+     * If this logic is used for many classes and we might change the maximum number,
+     * it's interesting to extract this piece of code to another class.
      */
     private Integer generateRandomNumber() {
         return new Random().nextInt(2_000_000);

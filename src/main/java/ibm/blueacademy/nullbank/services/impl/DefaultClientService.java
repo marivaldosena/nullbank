@@ -4,12 +4,11 @@ import ibm.blueacademy.nullbank.models.Client;
 import ibm.blueacademy.nullbank.repositories.ClientRepository;
 import ibm.blueacademy.nullbank.requests.NewClientRequest;
 import ibm.blueacademy.nullbank.services.ClientService;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
-@Primary
 @Service
 public class DefaultClientService implements ClientService {
     private ClientRepository clientRepository;
@@ -32,6 +31,10 @@ public class DefaultClientService implements ClientService {
     }
 
     @Override
+    public List<Client> listAllClients() {
+        return clientRepository.findAll();
+    }
+
     public Client findClientByCpf(String cpf) {
         Optional<Client> client = clientRepository.findByCpf(cpf);
 

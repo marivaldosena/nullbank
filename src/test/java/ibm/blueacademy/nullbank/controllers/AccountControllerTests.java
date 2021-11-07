@@ -6,11 +6,13 @@ import ibm.blueacademy.nullbank.helpers.providers.DepositArgumentsProvider;
 import ibm.blueacademy.nullbank.helpers.providers.TransferArgumentsProvider;
 import ibm.blueacademy.nullbank.helpers.providers.WithdrawalArgumentsProvider;
 import ibm.blueacademy.nullbank.models.Account;
+import ibm.blueacademy.nullbank.models.Transaction;
 import ibm.blueacademy.nullbank.models.enums.AccountType;
 import ibm.blueacademy.nullbank.requests.AmountRequest;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.services.AccountService;
 import ibm.blueacademy.nullbank.services.CashService;
+import ibm.blueacademy.nullbank.services.TransactionService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
@@ -54,6 +57,9 @@ public class AccountControllerTests {
 
     @MockBean
     private CashService cashService;
+
+    @MockBean
+    private TransactionService transactionService;
 
     NewAccountRequest request;
 
@@ -256,5 +262,34 @@ public class AccountControllerTests {
         // Verify
         Mockito.verify(accountService, atLeastOnce()).getAccountByNumber(any());
         Mockito.verify(cashService).transferCash(any(), any(), any());
+    }
+
+    @DisplayName("should get transaction history given a valid request")
+    @Test
+    void getHistory() throws Exception {
+        // Arrange
+        List<Transaction> expectedTransactionHistory = List.of(
+            new Transaction(expectedAccount, BigDecimal.valueOf(2_000), "Deposit"),
+            new Transaction(expectedAccount, BigDecimal.valueOf(2_500), "Deposit"),
+            new Transaction(expectedAccount, BigDecimal.valueOf(10_000), "Deposit")
+        );
+
+        Mockito.when(transactionService.getHistory(any())).thenReturn(expectedTransactionHistory);
+
+        // Act and Assert
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .get(URL_PATH + "/" + expectedAccount.getAccountNumber() + "/history")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+            ).andDo(print())
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.accountNumber", Matchers.is(expectedAccount.getAccountNumber())))
+            .andExpect(jsonPath("$.history.*.amount").exists())
+            .andExpect(jsonPath("$.history.*.description", hasItem("Deposit")));
+
+        // Verify
+        Mockito.verify(transactionService).getHistory(any());
     }
 }

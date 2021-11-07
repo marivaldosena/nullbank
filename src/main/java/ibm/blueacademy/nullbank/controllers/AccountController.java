@@ -1,13 +1,16 @@
 package ibm.blueacademy.nullbank.controllers;
 
 import ibm.blueacademy.nullbank.models.Account;
+import ibm.blueacademy.nullbank.models.Transaction;
 import ibm.blueacademy.nullbank.requests.AmountRequest;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.responses.AccountListResponse;
 import ibm.blueacademy.nullbank.responses.AccountResponse;
+import ibm.blueacademy.nullbank.responses.TransactionHistoryResponse;
 import ibm.blueacademy.nullbank.responses.TransferResponse;
 import ibm.blueacademy.nullbank.services.AccountService;
 import ibm.blueacademy.nullbank.services.CashService;
+import ibm.blueacademy.nullbank.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -21,10 +24,16 @@ import java.util.List;
 public class AccountController {
     private AccountService accountService;
     private CashService cashService;
+    private TransactionService transactionService;
 
-    public AccountController(AccountService accountService, CashService cashService) {
+    public AccountController(
+        AccountService accountService,
+        CashService cashService,
+        TransactionService transactionService
+    ) {
         this.accountService = accountService;
         this.cashService = cashService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping
@@ -95,6 +104,17 @@ public class AccountController {
         cashService.transferCash(origin, destination, request.getAmount());
 
         TransferResponse response = new TransferResponse(origin, destination, request.getAmount());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{accountNumber}/history")
+    public ResponseEntity<TransactionHistoryResponse> getHistory(
+        @PathVariable String accountNumber
+    ) {
+        Account account = accountService.getAccountByNumber(accountNumber);
+        List<Transaction> history = transactionService.getHistory(account);
+        TransactionHistoryResponse response  = new TransactionHistoryResponse(history);
 
         return ResponseEntity.ok(response);
     }

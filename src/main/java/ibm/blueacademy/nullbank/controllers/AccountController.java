@@ -69,4 +69,17 @@ public class AccountController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{accountNumber}/withdraw")
+    public ResponseEntity<AccountResponse> withdraw(
+        @PathVariable String accountNumber,
+        @Valid @RequestBody AmountRequest request
+    ) {
+        Account account = accountService.getAccountByNumber(accountNumber);
+        cashService.withdraw(account, request.getAmount());
+
+        AccountResponse response = new AccountResponse(account);
+
+        return ResponseEntity.ok(response);
+    }
 }

@@ -1,6 +1,7 @@
 package ibm.blueacademy.nullbank.models;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Random;
 
 @Entity
@@ -17,18 +18,20 @@ public class Account {
     @ManyToOne
     private Agency agency;
 
+    private BigDecimal currentBalance;
+
     /**
      * @deprecated Hibernate only.
      */
     public Account() {
     }
 
-
     public Account(Client accountHolder, AccountType accountType, Agency agency) {
         this.accountHolder = accountHolder;
         this.accountType = accountType;
         this.accountNumber = formatAccountNumber(generateRandomNumber(), 10);
         this.agency = agency;
+        this.currentBalance = BigDecimal.ZERO;
     }
 
     public Long getId() {
@@ -50,6 +53,18 @@ public class Account {
 
     public Agency getAgency() {
         return agency;
+    }
+
+    public BigDecimal getCurrentBalance() {
+        return currentBalance;
+    }
+
+    public void deposit(BigDecimal amount) {
+        currentBalance = currentBalance.add(amount);
+    }
+
+    public void withdraw(BigDecimal amount) {
+        currentBalance = currentBalance.subtract(amount);
     }
 
     private String formatAccountNumber(Integer inputString, int length) {

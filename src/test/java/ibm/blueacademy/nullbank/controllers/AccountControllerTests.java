@@ -87,6 +87,7 @@ public class AccountControllerTests {
 
         Mockito.when(accountService.listAccounts()).thenReturn(List.of(expectedAccount));
         ReflectionTestUtils.setField(expectedAccount, "id", 1L);
+        ReflectionTestUtils.setField(expectedAccount.getAccountHolder(), "id", 1L);
 
         // Act
         mockMvc.perform(
@@ -101,7 +102,8 @@ public class AccountControllerTests {
             .andExpect(jsonPath("$.data.*.agencyNumber", hasItems(expectedAccount.getAgency().getAgencyNumber())))
             .andExpect(jsonPath("$.data.*.agencyName", hasItems(expectedAccount.getAgency().getAgencyName())))
             .andExpect(jsonPath("$.data.*.accountHolderName", hasItems(expectedAccount.getAccountHolder().getName())))
-            .andExpect(jsonPath("$.data.*.accountHolderId", hasItems(expectedAccount.getAccountHolder().getId())));
+            .andExpect(jsonPath("$.data.*.accountHolderId", hasItems(1)))
+            .andExpect(jsonPath("$.data.*.currentBalance", hasItems(0)));
 
         // Verify
         Mockito.verify(accountService).listAccounts();

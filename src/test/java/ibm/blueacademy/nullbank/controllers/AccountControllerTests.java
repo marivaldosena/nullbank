@@ -133,7 +133,7 @@ public class AccountControllerTests {
         // Act and Assert
         mockMvc.perform(
                 MockMvcRequestBuilders
-                    .get(URL_PATH + "/1")
+                    .get(URL_PATH + "/" + expectedAccount.getAccountNumber())
                     .accept(MediaType.APPLICATION_JSON_VALUE)
                     .characterEncoding("UTF-8")
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -163,7 +163,7 @@ public class AccountControllerTests {
         // Act and Assert
         mockMvc.perform(
             MockMvcRequestBuilders
-                .post(URL_PATH + "/1/deposit")
+                .post(URL_PATH + "/" + expectedAccount.getAccountNumber() + "/deposit")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .characterEncoding("UTF-8")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

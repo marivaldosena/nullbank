@@ -3,7 +3,10 @@ package ibm.blueacademy.nullbank.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ibm.blueacademy.nullbank.helpers.TestsHelper;
 import ibm.blueacademy.nullbank.helpers.providers.DepositArgumentsProvider;
+import ibm.blueacademy.nullbank.helpers.providers.TransferArgumentsProvider;
+import ibm.blueacademy.nullbank.helpers.providers.WithdrawalArgumentsProvider;
 import ibm.blueacademy.nullbank.models.Account;
+import ibm.blueacademy.nullbank.models.enums.AccountType;
 import ibm.blueacademy.nullbank.requests.AmountRequest;
 import ibm.blueacademy.nullbank.requests.NewAccountRequest;
 import ibm.blueacademy.nullbank.services.AccountService;
@@ -31,6 +34,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasItems;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -179,18 +183,78 @@ public class AccountControllerTests {
     }
 
     @DisplayName("should withdraw given a valid amount")
-    @Test
-    void withdrawal() {
+    @ArgumentsSource(WithdrawalArgumentsProvider.class)
+    @ParameterizedTest
+    void withdrawal(double initialBalance, double expectedBalance, double... withdrawals) throws Exception {
         // Arrange
+        BigDecimal totalToWithdraw = BigDecimal.ZERO;
+
+        for (var amountToWithdraw : withdrawals) {
+            totalToWithdraw = totalToWithdraw.add(BigDecimal.valueOf(amountToWithdraw));
+        }
+
+        AmountRequest request = new AmountRequest(totalToWithdraw);
+        Mockito.when(accountService.getAccountByNumber(any())).thenReturn(expectedAccount);
+
         // Act and Assert
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post(URL_PATH + "/" + expectedAccount.getAccountNumber() + "/withdraw")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(request))
+            ).andDo(print())
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.accountHolderId", Matchers.is(1)))
+            .andExpect(jsonPath("$.currentBalance").exists());
+
         // Verify
+        Mockito.verify(accountService).getAccountByNumber(any());
+        Mockito.verify(cashService).withdraw(any(), any());
     }
 
     @DisplayName("should transfer from an account to another given a valid amount")
-    @Test
-    void transferMoney() {
+    @ArgumentsSource(TransferArgumentsProvider.class)
+    @ParameterizedTest
+    void transferMoney(
+        double originInitialBalance,
+        double originExpectedBalance,
+        double destinationExpectedBalance,
+        double... transfers
+    ) throws Exception {
         // Arrange
+        Account destination = new Account(TestsHelper.mockClient(), AccountType.SAVINGS_ACCOUNT, TestsHelper.mockAgency());
+        BigDecimal totalToTransfer = BigDecimal.ZERO;
+
+        for (var amountToTransfer : transfers) {
+            totalToTransfer = totalToTransfer.add(BigDecimal.valueOf(amountToTransfer));
+        }
+
+        AmountRequest request = new AmountRequest(totalToTransfer);
+        Mockito.when(accountService.getAccountByNumber(expectedAccount.getAccountNumber())).thenReturn(expectedAccount);
+        Mockito.when(accountService.getAccountByNumber(destination.getAccountNumber())).thenReturn(destination);
+
         // Act and Assert
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post(
+                    URL_PATH + "/" + expectedAccount.getAccountNumber() +
+                    "/transfer-to/" + destination.getAccountNumber()
+                )
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .characterEncoding("UTF-8")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(request))
+            ).andDo(print())
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(jsonPath("$.originAccountNumber").exists())
+            .andExpect(jsonPath("$.destinationAccountNumber").exists())
+            .andExpect(jsonPath("$.transferredAmount").exists())
+            .andExpect(jsonPath("$.currentBalance").exists());
+
         // Verify
+        Mockito.verify(accountService, atLeastOnce()).getAccountByNumber(any());
+        Mockito.verify(cashService).transferCash(any(), any(), any());
     }
 }

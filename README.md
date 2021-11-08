@@ -429,7 +429,7 @@ docker run --name sonarqube -p 9000:9000 sonarqube:lts-community
 
 2. Open the web browser and go to http://localhost:9000. The following image will open:
 
-![Login](images/login.png)
+![Login](images/login.PNG)
 
 3. Type in admin for user and password.
 

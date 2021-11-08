@@ -37,6 +37,7 @@
   - [Find Account](#find-account)
   - [Withdrawal](#withdrawal)
   - [List All Accounts](#list-all-accounts)
+- [SonarQube](#sonarqube)
 
 # Curriculum
 
@@ -393,5 +394,69 @@ Response:
     ]
 }
 ```
+
+[Go to topics](#topics)
+
+# SonarQube
+
+SonarQube is a tool for Code Static Analysis. For configuration, it's necessary to create a file 
+called settings.xml in ~/.m2 folder.
+
+File: ~/.m2/settings.xml
+
+```xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <pluginGroups>
+        <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+    </pluginGroups>
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+     </profiles>
+</settings>
+```
+
+1. For running this tool, you need to run the following Docker command:
+
+```bash
+docker run --name sonarqube -p 9000:9000 sonarqube:lts-community
+```
+
+2. Open the web browser and go to http://localhost:9000. The following image will open:
+
+![Login](images/login.png)
+
+3. Type in admin for user and password.
+
+4. In the top right side, click in the green button with an A.
+
+![Green Button](images/green-button.PNG)
+
+5. Select My account and click on Security Tab.
+
+![Security Tab](images/security-tab.PNG)
+
+6. Then, generate a token.
+
+![Generate Token](images/generate-token.PNG)
+
+7. Type the following command:
+
+```shell
+mvn clean install sonar:sonar -D sonar.projectKey=nullbank  -D sonar.host.url=http://localhost:9000 -D sonar.login=<your token>
+```
+
+8. In the top left side, go to Projects -> Your Project.
+
+![Your Projects](images/your-projects.PNG)
+
+Our current coverage is:
+
+![Code Coverage](images/sonarqube-coverage.PNG)
 
 [Go to topics](#topics)

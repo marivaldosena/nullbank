@@ -6,7 +6,7 @@
 <!-- Images -->
 
 <!-- Links -->
-[orange-talents-url]: https://www.zup.com.br/orange-talents
+[blue-academy-url]: https://ibmblueacademy.corporate.gama.academy/
 [java-url]: https://www.oracle.com/java/
 [spring-url]: https://spring.io/
 
@@ -14,7 +14,7 @@
 <!-- Content -->
 # IBM Blue Academy | NullBank
 
-[![IBM Blue Academy][blue-academy-badge]][orange-talents-url]
+[![IBM Blue Academy][blue-academy-badge]][blue-academy-url]
 [![Java][java-badge]][java-url]
 [![Spring][spring-boot-badge]][spring-url]
 
